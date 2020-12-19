@@ -1,13 +1,23 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <app-header></app-header>
     </div>
     <router-view/>
   </div>
 </template>
-
+<script>
+import Header from './components/header/header'
+export default {
+  name: 'app',
+  components: {
+    'app-header': Header
+  },
+  created () {
+    this.$store.dispatch('tryAutoLogin')
+  }
+}
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
