@@ -37,12 +37,15 @@
             </b-form-group>
             <b-form-group id="input-group-3" label="Image" label-for="input-3">
               <b-form-file
-                ref="file"
-                v-on:change="handleFileUpload()"
+                v-on:change="handleFileUpload"
                 placeholder="Choose a file or drop it here..."
                 drop-placeholder="Drop file here..."
               ></b-form-file>
             </b-form-group>
+            <b-form-group>
+              <b-img v-bind="mainProps" :src="getImageUrl(dbImage)" rounded alt="Rounded image"></b-img>
+            </b-form-group>
+
             <b-button type="submit" variant="primary">Submit</b-button>
             <b-button type="reset" variant="danger">Reset</b-button>
           </b-form>
@@ -64,12 +67,17 @@ export default {
         price: '',
         image: '',
         id: ''
-      }
+      },
+      mainProps: { width: 75, height: 75, class: 'm1' },
+      dbImage: ''
     }
   },
   methods: {
     onSubmit (event) {
       this.$store.dispatch('updateProduct', this.form)
+    },
+    getImageUrl (productImage) {
+      return process.env.VUE_APP_URL + productImage
     },
     onReset (event) {
       event.preventDefault()
@@ -79,17 +87,25 @@ export default {
       this.form.price = ''
       this.form.image = ''
     },
-    handleFileUpload () {
-      if (this.$refs.file.files[0].length) {
-        this.form.image = this.$refs.file.files[0]
+    handleFileUpload (e) {
+      console.log(e.target.files[0].size)
+      if (e.target.files[0].size) {
+        const selectedImage = e.target.files[0]
+        this.createBase64Image(selectedImage)
       }
-      this.onReset()
+    },
+    createBase64Image (fileObject) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.form.image = e.target.result
+      }
+      reader.readAsDataURL(fileObject)
     },
     setData (data) {
       this.form.title = data.title
       this.form.description = data.description
       this.form.price = data.price
-      this.form.image = data.image
+      this.dbImage = data.image
       this.form.id = data.id
     }
   },

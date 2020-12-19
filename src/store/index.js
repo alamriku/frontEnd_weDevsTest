@@ -61,7 +61,6 @@ export default new Vuex.Store({
       localStorage.removeItem('expirationDate')
       localStorage.removeItem('idToken')
       localStorage.removeItem('user')
-      router.replace('/')
     },
     tryAutoLogin ({ commit }) {
       const token = localStorage.getItem('idToken')

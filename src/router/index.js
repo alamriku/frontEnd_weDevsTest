@@ -26,11 +26,6 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
-    // BeforeEnter (to, from, next) {
-    //   if (store.state.idToken) {
-    //     next()
-    //   } else next({ name: 'Login' })
-    // }
   },
   {
     path: '/add-product',
@@ -58,8 +53,12 @@ router.beforeEach((to, from, next) => {
   const expirationDate = localStorage.getItem('expirationDate')
   const now = new Date()
   if (now.getTime() >= expirationDate) {
-    console.log(next())
-    next({ path: '/' })
+    store.dispatch('logout')
+    if (to.path === '/') {
+      next()
+    } else {
+      next({ path: '/' })
+    }
   } else {
     next()
   }
