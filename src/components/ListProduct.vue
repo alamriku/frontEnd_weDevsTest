@@ -1,38 +1,72 @@
 <template>
-  <div>
-    <b-table striped hover
-             :items="items"
-             :fields="fields"
-             small
-    >
-      <template #cell(image)="row">
-        <b-img v-bind="mainProps" :src="getImageUrl(row.item.image)" rounded  alt="Fluid-grow image"></b-img>
-      </template>
-      <template #cell(actions)="row">
-        <b-button size="md" :to="{ name: 'edit-product', params: { id: row.item.id } }" class="mr-1">
-          Edit
-        </b-button>
-        <b-button size="md" @click="destroy(row.item.id)" class="mr-1">
-          Delete
-        </b-button>
-      </template>
-    </b-table>
-  </div>
+  <b-container >
+    <div class="row justify-content-center">
+
+      <div v-if="totalRows" class="col-8">
+        <div class="overflow-auto">
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            aria-controls="my-table"
+          ></b-pagination>
+          <b-table striped hover
+                   :items="items"
+                   :fields="fields"
+                   :per-page="perPage"
+                   :current-page="currentPage"
+                   small
+                   id="my-table"
+          >
+            <template #cell(image)="row">
+              <b-img v-bind="mainProps" :src="getImageUrl(row.item.image)" rounded  alt="Fluid-grow image"></b-img>
+            </template>
+            <template #cell(actions)="row">
+              <b-button size="md" :to="{ name: 'edit-product', params: { id: row.item.id } }" class="mr-1">
+                Edit
+              </b-button>
+              <b-button size="md" @click="destroy(row.item.id)" class="mr-1">
+                Delete
+              </b-button>
+            </template>
+          </b-table>
+        </div>
+      </div>
+      <div v-else class="col-8">
+        <b-card bg-variant="dark" text-variant="white" title="Welcome">
+          <b-card-text>
+            No Data Found, please add some data
+          </b-card-text>
+          <b-button to="add-product" variant="primary">Go here</b-button>
+        </b-card>
+      </div>
+
+    </div>
+  </b-container>
 </template>
 
 <script>
 export default {
   data () {
     return {
+      perPage: 5,
+      currentPage: 1,
       mainProps: { width: 75, height: 75, class: 'm1' }
+
     }
   },
   methods: {
-    destroy (product) {
-      this.$store.dispatch('deleteProduct', product)
+    async destroy (product) {
+      await this.$store.dispatch('deleteProduct', product)
+      const index = this.items.findIndex(items => items.id === product)
+      this.items.splice(index, 1)
+      this.$toasted.show('Successfully Deleted', {
+        theme: 'bubble',
+        position: 'top-right',
+        duration: 1500
+      })
     },
     getImageUrl (productImage) {
-      console.log(process.env.VUE_APP_URL + productImage)
       return process.env.VUE_APP_URL + productImage
     }
   },
@@ -44,11 +78,11 @@ export default {
       return this.$store.getters.isProductList
     },
     totalRows () {
-      return this.items.length
+      return this.$store.getters.isProductList ? this.$store.getters.isProductList.length : 0
     }
   },
-  created () {
-    this.$store.dispatch('products')
+  async beforeMount () {
+    await this.$store.dispatch('products')
   }
 }
 </script>

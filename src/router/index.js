@@ -1,46 +1,51 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '@/store'
+import middleware from './middleware'
 import Login from '../components/Login'
-import About from '../components/About'
+import Home from '../components/Home'
 import AddProduct from '../components/AddProduct'
 import ListProduct from '../components/ListProduct'
 import EditProduct from '../components/EditProduct'
+import NotFound from '../components/NotFound'
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Login',
+    path: '/login',
+    name: 'login',
     component: Login,
-    beforeEnter (to, from, next) {
-      store.dispatch('tryAutoLogin')
-      if (store.getters.isAuthenticated) {
-        next({ name: 'About' })
-      } else {
-        next()
-      }
-    }
+    beforeEnter: middleware.guest
+
   },
   {
-    path: '/about',
-    name: 'About',
-    component: About
+    path: '/',
+    name: 'home',
+    component: Home,
+    beforeEnter: middleware.user
   },
   {
     path: '/add-product',
     name: 'add-product',
-    component: AddProduct
+    component: AddProduct,
+    beforeEnter: middleware.user
   },
   {
     path: '/list-product',
     name: 'list-product',
-    component: ListProduct
+    component: ListProduct,
+    beforeEnter: middleware.user
+
   },
   {
-    path: '/product/edit/',
+    path: '/product/:id/edit',
     name: 'edit-product',
-    component: EditProduct
+    component: EditProduct,
+    beforeEnter: middleware.user
+  },
+  {
+    path: '*',
+    name: 'Not Found',
+    component: NotFound
   }
 
 ]
@@ -49,18 +54,5 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
-router.beforeEach((to, from, next) => {
-  const expirationDate = localStorage.getItem('expirationDate')
-  const now = new Date()
-  if (now.getTime() >= expirationDate) {
-    store.dispatch('logout')
-    if (to.path === '/') {
-      next()
-    } else {
-      next({ path: '/' })
-    }
-  } else {
-    next()
-  }
-})
+
 export default router

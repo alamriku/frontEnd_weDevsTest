@@ -1,8 +1,9 @@
 <template>
   <b-container class="bv-example-row">
     <b-row class="justify-content-md-center">
+      <p v-if="loading">Loading...</p>
       <b-col cols="6">
-        <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+        <b-form @submit.prevent="login">
           <b-form-group
             id="input-group-1"
             label="Email address:"
@@ -40,23 +41,34 @@ export default {
   data () {
     return {
       form: {
-        email: '',
-        password: ''
+        email: null,
+        password: null
       },
-      show: true
+      loading: false,
+      error: null
     }
   },
   methods: {
-    onSubmit (event) {
-      event.preventDefault()
-      console.log(this.form)
-      this.$store.dispatch('login', this.form)
-    },
-    onReset (event) {
-      event.preventDefault()
-      // Reset our form values
-      this.form.email = ''
-      this.form.password = ''
+    async login () {
+      this.error = null
+      try {
+        this.loading = true
+        await this.$store.dispatch('login', this.form)
+        await this.$router.push({ name: 'home' })
+      } catch (e) {
+        console.log(e.response)
+        if (e.response.status === 422) {
+          const { data } = e.response
+          this.error = data.errors
+          this.$toasted.error(data.errors, {
+            theme: 'bubble',
+            position: 'top-right',
+            duration: 2500
+          })
+        }
+      } finally {
+        this.loading = false
+      }
     }
   }
 }

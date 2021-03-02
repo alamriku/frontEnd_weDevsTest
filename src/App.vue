@@ -3,7 +3,7 @@
     <div id="nav">
       <app-header></app-header>
     </div>
-    <router-view/>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -12,9 +12,6 @@ export default {
   name: 'app',
   components: {
     'app-header': Header
-  },
-  created () {
-    this.$store.dispatch('tryAutoLogin')
   }
 }
 </script>

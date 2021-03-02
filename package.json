@@ -16,6 +16,7 @@
     "portal-vue": "^2.1.7",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vue-toasted": "^1.1.28",
     "vuex": "^3.4.0",
     "webpack-preset-babel-stage-2": "^0.2.0"
   },

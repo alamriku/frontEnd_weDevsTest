@@ -2,22 +2,8 @@ import axios from 'axios'
 // import LocalStorageService from './services/LocalStorageService'
 import router from './store'
 const instance = axios.create({
-  baseURL: 'http://product-crud.com/'
+  baseURL: 'http://product-crud.test/'
 })
-// const localStorageService = LocalStorageService.getService()
-/// Add a request interceptor
-// axios.interceptors.request.use(
-//   config => {
-//     const token = localStorage.getItem('idToken')
-//     if (token) {
-//       config.headers.Authorization = 'Bearer ' + token
-//     }
-//     // config.headers['Content-Type'] = 'application/json';
-//     return config
-//   },
-//   error => {
-//     Promise.reject(error)
-//   })
 
 // Add a response interceptor
 

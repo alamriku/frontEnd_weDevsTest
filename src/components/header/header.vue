@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth">
+  <div v-if="authenticated">
     <b-navbar toggleable="lg" type="dark" variant="info">
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -15,7 +15,7 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown right>
 <!--            <b-dropdown-item @click="onRefresh">Refresh</b-dropdown-item>-->
-            <b-dropdown-item @click="onLogout">Sign Out</b-dropdown-item>
+            <b-dropdown-item @click="logout">Sign Out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -23,18 +23,25 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   computed: {
-    auth () {
-      return this.$store.getters.isAuthenticated
-    }
+    ...mapGetters({
+      authenticated: 'authenticated'
+    })
   },
   methods: {
-    onLogout () {
-      this.$store.dispatch('logout')
-    },
-    onRefresh () {
-      this.$store.dispatch('refresh')
+    async logout () {
+      this.loading = true
+      try {
+        await this.$store.dispatch('logout')
+        await this.$router.push({ name: 'login' })
+      } catch (e) {
+        this.error = e
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
