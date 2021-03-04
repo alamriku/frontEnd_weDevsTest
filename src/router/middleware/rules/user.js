@@ -1,17 +1,22 @@
 import store from '../../../store'
-
+// import repository from '../../../api/repository'
+import cookies from 'js-cookie'
 export default (to, from, next) => {
-  if (store.getters.authenticated) {
-    const currentMillisecond = new Date().getTime()
-    const user = JSON.parse(localStorage.getItem('user'))
-    const expireMillisecond = user.expireDuration
-    if (currentMillisecond > expireMillisecond) {
-      store.dispatch('logout')
-      next({ name: 'login' })
-    } else {
-      next()
-    }
+  const token = cookies.get('x-access-token')
+  const user = localStorage.user
+  if (!token && user) {
+    console.log('test')
+    store.dispatch('refreshToken')
+    next()
+  } else if (user && token) {
+    next()
+  } else if (token === 'undefined' && user) {
+    console.log('test')
+    store.dispatch('refreshToken')
+    console.log(token)
   } else {
+    store.dispatch('getout')
+    store.dispatch('logout')
     next({ name: 'login' })
   }
 }

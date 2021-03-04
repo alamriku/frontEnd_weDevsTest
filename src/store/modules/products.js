@@ -24,6 +24,7 @@ const actions = {
   },
   products: async ({ commit }) => {
     try {
+      repository.axiosInstance.defaults.headers.common['Content-Type'] = 'multipart/form-data'
       const { data } = await repository.products()
       const products = []
       const rows = data.products

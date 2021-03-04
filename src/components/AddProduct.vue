@@ -62,6 +62,8 @@
 </template>
 
 <script>
+
+import cookies from 'js-cookie'
 export default {
   data () {
     return {
@@ -80,7 +82,10 @@ export default {
       try {
         this.report = true
         const formMultipart = this.dataAsFormData()
-        console.log(...formMultipart.entries())
+        const token = cookies.get('x-access-token')
+        if (!token) {
+          await this.$store.dispatch('refreshToken')
+        }
         await this.$store.dispatch('addProduct', formMultipart)
         this.$toasted.show('Successfully Added', {
           theme: 'bubble',

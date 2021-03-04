@@ -15,7 +15,6 @@ const routes = [
     name: 'login',
     component: Login,
     beforeEnter: middleware.guest
-
   },
   {
     path: '/',
@@ -34,7 +33,6 @@ const routes = [
     name: 'list-product',
     component: ListProduct,
     beforeEnter: middleware.user
-
   },
   {
     path: '/product/:id/edit',

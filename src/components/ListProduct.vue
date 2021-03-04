@@ -46,6 +46,8 @@
 </template>
 
 <script>
+
+import cookies from 'js-cookie'
 export default {
   data () {
     return {
@@ -57,6 +59,7 @@ export default {
   },
   methods: {
     async destroy (product) {
+      await this.tokenChecker()
       await this.$store.dispatch('deleteProduct', product)
       const index = this.items.findIndex(items => items.id === product)
       this.items.splice(index, 1)
@@ -68,6 +71,12 @@ export default {
     },
     getImageUrl (productImage) {
       return process.env.VUE_APP_URL + productImage
+    },
+    async tokenChecker () {
+      const token = cookies.get('x-access-token')
+      if (!token) {
+        await this.$store.dispatch('refreshToken')
+      }
     }
   },
   computed: {
@@ -82,6 +91,7 @@ export default {
     }
   },
   async beforeMount () {
+    await this.tokenChecker()
     await this.$store.dispatch('products')
   }
 }

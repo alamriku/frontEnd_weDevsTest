@@ -53,14 +53,14 @@ export default {
       this.error = null
       try {
         this.loading = true
-        await this.$store.dispatch('login', this.form)
-        await this.$router.push({ name: 'home' })
+        const res = await this.$store.dispatch('login', this.form)
+        await this.$store.dispatch('setToken', res.data)
+        this.$router.push({ name: 'home' })
       } catch (e) {
-        console.log(e.response)
         if (e.response.status === 422) {
           const { data } = e.response
-          this.error = data.errors
-          this.$toasted.error(data.errors, {
+          this.error = data.message
+          this.$toasted.error(data.message, {
             theme: 'bubble',
             position: 'top-right',
             duration: 2500

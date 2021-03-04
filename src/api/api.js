@@ -1,18 +1,15 @@
 import axios from 'axios'
-
-const instance = axios.create()
+import cookies from 'js-cookie'
+const instance = axios.create({
+  withCredentials: true
+})
 
 instance.interceptors.request.use(request => {
-  if (localStorage.user) {
-    const currentMillisecond = new Date().getTime()
-    const user = JSON.parse(localStorage.getItem('user'))
-    const expireMillisecond = user.expireDuration
-    if (expireMillisecond > currentMillisecond) {
-      request.headers.common.Authorization = 'Bearer ' + user.token
-    }
-  }
+  const token = cookies.get('x-access-token')
   request.headers.common.Accept = 'application/json'
   request.headers.common['Content-Type'] = 'application/json'
+  request.headers.common.Authorization = `Bearer ${token}`
+
   return request
 }, error => {
   return Promise.reject(error)
@@ -27,8 +24,8 @@ instance.interceptors.response.use(
     switch (error.response.status) {
       case 401: // Not Logged in or token is not provided
         console.log(error.response.data.message)
-        localStorage.removeItem('user')
-        window.location.reload()
+        // localStorage.removeItem('user')
+        // window.location.reload()
         break
       case 419: // session expire
         console.log(error.response.data.message)

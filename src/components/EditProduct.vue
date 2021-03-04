@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import cookies from 'js-cookie'
 export default {
   data () {
     return {
@@ -83,6 +84,7 @@ export default {
   methods: {
     async onSubmit () {
       try {
+        await this.tokenChecker()
         this.report = true
         const formMultiData = this.formData()
         const dataObject = { id: this.form.id, editForm: formMultiData }
@@ -135,6 +137,12 @@ export default {
       await this.$store.dispatch('editProduct', id)
       const product = await this.$store.getters.product
       this.setData(product)
+    },
+    async tokenChecker () {
+      const token = cookies.get('x-access-token')
+      if (!token) {
+        await this.$store.dispatch('refreshToken')
+      }
     }
   },
   beforeMount () {
